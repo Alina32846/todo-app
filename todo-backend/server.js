@@ -19,6 +19,13 @@ function checkApiKey(req, res, next) {
 
 app.use('/api', checkApiKey);
 
+let tasks = [];
+let nextId = 1;
+
+app.get('/api/tasks', (req, res) => {
+  res.json(tasks);
+});
+
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
