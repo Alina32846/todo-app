@@ -12,11 +12,22 @@ const headers = {
 
 function App() {
   const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const fetchTasks = async () => {
-    const res = await fetch(`${API_BASE}/api/tasks`, { headers });
-    const data = await res.json();
-    setTasks(data);
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await fetch(`${API_BASE}/api/tasks`, { headers });
+      if (!res.ok) throw new Error(`Ошибка загрузки: ${res.status}`);
+      const data = await res.json();
+      setTasks(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -24,42 +35,65 @@ function App() {
   }, []);
 
   const handleAddTask = async (title) => {
-    const res = await fetch(`${API_BASE}/api/tasks`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({ title }),
-    });
-    const newTask = await res.json();
-    setTasks((prev) => [...prev, newTask]);
+    try {
+      setError(null);
+      const res = await fetch(`${API_BASE}/api/tasks`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ title }),
+      });
+      if (!res.ok) throw new Error(`Не удалось добавить задачу: ${res.status}`);
+      const newTask = await res.json();
+      setTasks((prev) => [...prev, newTask]);
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   const handleDeleteTask = async (id) => {
-    await fetch(`${API_BASE}/api/tasks/${id}`, {
-      method: 'DELETE',
-      headers,
-    });
-    setTasks((prev) => prev.filter((t) => t.id !== id));
+    try {
+      setError(null);
+      const res = await fetch(`${API_BASE}/api/tasks/${id}`, {
+        method: 'DELETE',
+        headers,
+      });
+      if (!res.ok) throw new Error(`Не удалось удалить задачу: ${res.status}`);
+      setTasks((prev) => prev.filter((t) => t.id !== id));
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   const handleUpdateTask = async (id, payload) => {
-    const res = await fetch(`${API_BASE}/api/tasks/${id}`, {
-      method: 'PUT',
-      headers,
-      body: JSON.stringify(payload),
-    });
-    const updated = await res.json();
-    setTasks((prev) => prev.map((t) => (t.id === id ? updated : t)));
+    try {
+      setError(null);
+      const res = await fetch(`${API_BASE}/api/tasks/${id}`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error(`Не удалось обновить задачу: ${res.status}`);
+      const updated = await res.json();
+      setTasks((prev) => prev.map((t) => (t.id === id ? updated : t)));
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   return (
     <div className="app">
       <h1>TodoList</h1>
       <TaskInput onAdd={handleAddTask} />
-      <TaskList
-        tasks={tasks}
-        onUpdate={handleUpdateTask}
-        onDelete={handleDeleteTask}
-      />
+      {error && <p className="error">{error}</p>}
+      {loading ? (
+        <p className="loading">Загрузка...</p>
+      ) : (
+        <TaskList
+          tasks={tasks}
+          onUpdate={handleUpdateTask}
+          onDelete={handleDeleteTask}
+        />
+      )}
     </div>
   );
 }

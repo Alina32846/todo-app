@@ -83,8 +83,18 @@ button:hover {
   font-size: 14px;
 }
 
-.empty {
+.empty,
+.loading {
   color: #8e8e93;
   text-align: center;
   margin: 24px 0;
+}
+
+.error {
+  background: #fff0f0;
+  color: #d70015;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  font-size: 14px;
 }
