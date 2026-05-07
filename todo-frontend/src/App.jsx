@@ -15,7 +15,17 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const isDemoHost =
+    typeof window !== 'undefined' &&
+    window.location.hostname !== 'localhost' &&
+    window.location.hostname !== '127.0.0.1' &&
+    /^https?:\/\/(localhost|127\.0\.0\.1)/.test(API_BASE);
+
   const fetchTasks = async () => {
+    if (isDemoHost) {
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
       setError(null);
@@ -83,6 +93,11 @@ function App() {
   return (
     <div className="app">
       <h1>TodoList</h1>
+      {isDemoHost && (
+        <p className="demo-banner">
+          Демо-версия. Бэкенд работает локально — для полноценной работы запустите его по инструкции в README.
+        </p>
+      )}
       <TaskInput onAdd={handleAddTask} />
       {error && <p className="error">{error}</p>}
       {loading ? (
