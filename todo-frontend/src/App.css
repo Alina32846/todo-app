@@ -22,3 +22,69 @@ h1 {
   margin: 0 0 24px;
   text-align: center;
 }
+
+.task-input {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.task-input input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #d2d2d7;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  background: #007aff;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+button:hover {
+  background: #0066d4;
+}
+
+.task-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f3;
+}
+
+.task-item .title {
+  flex: 1;
+  cursor: pointer;
+}
+
+.task-item.done .title {
+  text-decoration: line-through;
+  color: #8e8e93;
+}
+
+.task-item input[type="text"] {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #d2d2d7;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.empty {
+  color: #8e8e93;
+  text-align: center;
+  margin: 24px 0;
+}
