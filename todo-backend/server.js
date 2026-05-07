@@ -9,6 +9,15 @@ const API_KEY = process.env.API_KEY;
 app.use(cors());
 app.use(express.json());
 
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const ms = Date.now() - start;
+    console.log(`${req.method} ${req.url} -> ${res.statusCode} (${ms}ms)`);
+  });
+  next();
+});
+
 function checkApiKey(req, res, next) {
   try {
     const clientKey = req.headers['x-api-key'];
