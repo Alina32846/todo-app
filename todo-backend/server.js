@@ -26,6 +26,16 @@ app.get('/api/tasks', (req, res) => {
   res.json(tasks);
 });
 
+app.post('/api/tasks', (req, res) => {
+  const { title } = req.body;
+  if (!title || typeof title !== 'string' || !title.trim()) {
+    return res.status(400).json({ error: 'Field "title" is required' });
+  }
+  const task = { id: nextId++, title: title.trim(), done: false };
+  tasks.push(task);
+  res.status(201).json(task);
+});
+
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
