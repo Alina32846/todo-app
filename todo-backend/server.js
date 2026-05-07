@@ -36,6 +36,28 @@ app.post('/api/tasks', (req, res) => {
   res.status(201).json(task);
 });
 
+app.put('/api/tasks/:id', (req, res) => {
+  const id = Number(req.params.id);
+  const task = tasks.find((t) => t.id === id);
+  if (!task) {
+    return res.status(404).json({ error: 'Task not found' });
+  }
+  const { title, done } = req.body;
+  if (title !== undefined) task.title = String(title).trim();
+  if (done !== undefined) task.done = Boolean(done);
+  res.json(task);
+});
+
+app.delete('/api/tasks/:id', (req, res) => {
+  const id = Number(req.params.id);
+  const index = tasks.findIndex((t) => t.id === id);
+  if (index === -1) {
+    return res.status(404).json({ error: 'Task not found' });
+  }
+  tasks.splice(index, 1);
+  res.status(204).end();
+});
+
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
