@@ -10,11 +10,15 @@ app.use(cors());
 app.use(express.json());
 
 function checkApiKey(req, res, next) {
-  const clientKey = req.headers['x-api-key'];
-  if (!clientKey || clientKey !== API_KEY) {
-    return res.status(401).json({ error: 'Invalid or missing API key' });
+  try {
+    const clientKey = req.headers['x-api-key'];
+    if (!clientKey || clientKey !== API_KEY) {
+      return res.status(401).json({ error: 'Invalid or missing API key' });
+    }
+    next();
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
-  next();
 }
 
 app.use('/api', checkApiKey);
@@ -23,39 +27,55 @@ let tasks = [];
 let nextId = 1;
 
 app.get('/api/tasks', (req, res) => {
-  res.json(tasks);
+  try {
+    res.json(tasks);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 app.post('/api/tasks', (req, res) => {
-  const { title } = req.body;
-  if (!title || typeof title !== 'string' || !title.trim()) {
-    return res.status(400).json({ error: 'Field "title" is required' });
+  try {
+    const { title } = req.body;
+    if (!title || typeof title !== 'string' || !title.trim()) {
+      return res.status(400).json({ error: 'Field "title" is required' });
+    }
+    const task = { id: nextId++, title: title.trim(), done: false };
+    tasks.push(task);
+    res.status(201).json(task);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
-  const task = { id: nextId++, title: title.trim(), done: false };
-  tasks.push(task);
-  res.status(201).json(task);
 });
 
 app.put('/api/tasks/:id', (req, res) => {
-  const id = Number(req.params.id);
-  const task = tasks.find((t) => t.id === id);
-  if (!task) {
-    return res.status(404).json({ error: 'Task not found' });
+  try {
+    const id = Number(req.params.id);
+    const task = tasks.find((t) => t.id === id);
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+    const { title, done } = req.body;
+    if (title !== undefined) task.title = String(title).trim();
+    if (done !== undefined) task.done = Boolean(done);
+    res.json(task);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
-  const { title, done } = req.body;
-  if (title !== undefined) task.title = String(title).trim();
-  if (done !== undefined) task.done = Boolean(done);
-  res.json(task);
 });
 
 app.delete('/api/tasks/:id', (req, res) => {
-  const id = Number(req.params.id);
-  const index = tasks.findIndex((t) => t.id === id);
-  if (index === -1) {
-    return res.status(404).json({ error: 'Task not found' });
+  try {
+    const id = Number(req.params.id);
+    const index = tasks.findIndex((t) => t.id === id);
+    if (index === -1) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+    tasks.splice(index, 1);
+    res.status(204).end();
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
-  tasks.splice(index, 1);
-  res.status(204).end();
 });
 
 app.listen(PORT, () => {
