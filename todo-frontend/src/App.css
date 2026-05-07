@@ -98,3 +98,14 @@ button:hover {
   margin-bottom: 12px;
   font-size: 14px;
 }
+
+.demo-banner {
+  background: #f0f7ff;
+  color: #003d7a;
+  border: 1px solid #b3d4ff;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  line-height: 1.4;
+}
